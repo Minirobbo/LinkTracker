@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LinkTracker.Models;
+using LinkTracker.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
 namespace LinkTracker.Controllers
@@ -6,14 +8,19 @@ namespace LinkTracker.Controllers
     [ApiController]
     public class RedirectController : Controller
     {
-        [HttpGet("/{id}")]
-        public async Task<ActionResult> Get(string id)
+        [HttpGet("/{filename}")]
+        public async Task<ActionResult> Get(string filename, IFileStorage fileStorage)
         {
-            MemoryStream ms = new();
-            StreamWriter writer = new(ms);
-            writer.WriteLine(id);
-            writer.Flush();
-            return File(ms, "application/text");
+            StoredFile? file = await fileStorage.GetFile(filename);
+            if (file is not null) return File(file.Data, file.ContentType, file.GetPath());
+            else return NotFound();
+        }
+
+        [HttpPost("/upload/{filename}")]
+        public async Task<ActionResult> Upload(string filename, IFormFile file, IFileStorage fileStorage)
+        {
+            if (await fileStorage.UploadFile(new StoredFile(filename, file.OpenReadStream(), file.ContentType))) return Ok();
+            else return BadRequest();
         }
     }
 }
