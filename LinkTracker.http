@@ -1,6 +1,0 @@
-@LinkTracker_HostAddress = http://localhost:5296
-
-GET {{LinkTracker_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
