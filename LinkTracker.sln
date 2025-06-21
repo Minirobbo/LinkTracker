@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkTracker", "LinkTracker.csproj", "{F36DCC97-6B64-4ACB-A757-3BC3C0B9A80E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkTracker.API", "LinkTracker.API\LinkTracker.API.csproj", "{6DB5F51D-C557-DC61-8436-F9AD19CF5146}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkTracker.TestSuite", "LinkTracker.TestSuite\LinkTracker.TestSuite.csproj", "{611F7FCC-E406-79EB-BAD0-E92248AE213E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F36DCC97-6B64-4ACB-A757-3BC3C0B9A80E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F36DCC97-6B64-4ACB-A757-3BC3C0B9A80E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F36DCC97-6B64-4ACB-A757-3BC3C0B9A80E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F36DCC97-6B64-4ACB-A757-3BC3C0B9A80E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DB5F51D-C557-DC61-8436-F9AD19CF5146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DB5F51D-C557-DC61-8436-F9AD19CF5146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DB5F51D-C557-DC61-8436-F9AD19CF5146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DB5F51D-C557-DC61-8436-F9AD19CF5146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{611F7FCC-E406-79EB-BAD0-E92248AE213E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{611F7FCC-E406-79EB-BAD0-E92248AE213E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{611F7FCC-E406-79EB-BAD0-E92248AE213E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{611F7FCC-E406-79EB-BAD0-E92248AE213E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

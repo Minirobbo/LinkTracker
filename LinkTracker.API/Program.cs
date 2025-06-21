@@ -1,4 +1,4 @@
-using LinkTracker.Services;
+using LinkTracker.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,5 +1,4 @@
-﻿
-namespace LinkTracker.Models
+﻿namespace LinkTracker.API.Models
 {
     public class StoredFile
     {
@@ -19,7 +18,7 @@ namespace LinkTracker.Models
 
         public StoredFile(string path, Stream data, string contentType) : this(Path.GetFileNameWithoutExtension(path), Path.GetExtension(path), data, contentType) { }
 
-        internal string GetPath()
+        public string GetPath()
         {
             return $"{Name}{Ext}";
         }

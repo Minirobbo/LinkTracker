@@ -1,9 +1,9 @@
-﻿using LinkTracker.Models;
-using LinkTracker.Services;
+﻿using LinkTracker.API.Models;
+using LinkTracker.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
-namespace LinkTracker.Controllers
+namespace LinkTracker.API.Controllers
 {
     [ApiController]
     public class RedirectController : Controller
