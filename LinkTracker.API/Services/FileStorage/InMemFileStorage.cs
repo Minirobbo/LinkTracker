@@ -1,6 +1,6 @@
 ﻿using LinkTracker.API.Models;
 
-namespace LinkTracker.API.Services
+namespace LinkTracker.API.Services.FileStorage
 {
     public class InMemFileStorage : IFileStorage
     {
