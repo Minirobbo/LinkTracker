@@ -1,4 +1,5 @@
 ﻿using LinkTracker.API.Models;
+using LinkTracker.API.Services.Analytics;
 using LinkTracker.API.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -9,10 +10,14 @@ namespace LinkTracker.API.Controllers
     public class RedirectController : Controller
     {
         [HttpGet("/{filename}")]
-        public async Task<ActionResult> Get(string filename, IFileStorage fileStorage)
+        public async Task<ActionResult> Get(string filename, IFileStorage fileStorage, IAnalyticsTracker analyticsTracker)
         {
             StoredFile? file = await fileStorage.GetFile(filename);
-            if (file is not null) return File(file.Data, file.ContentType, file.GetPath());
+            if (file is not null)
+            {
+                await analyticsTracker.RecordVisit(filename);
+                return File(file.Data, file.ContentType, file.GetPath());
+            }
             else return NotFound();
         }
 
