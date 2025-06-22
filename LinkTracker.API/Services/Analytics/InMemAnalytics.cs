@@ -23,7 +23,7 @@
             return visits.Values.SelectMany(s => s);
         }
 
-        public async Task RecordVisit(string filename, string? referralId)
+        public async Task RecordVisit(string filename, string? referralId = null)
         {
             Visit visit = new(filename, referralId);
             if (!visits.TryAdd(filename, [visit]))

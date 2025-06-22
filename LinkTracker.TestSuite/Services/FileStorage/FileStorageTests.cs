@@ -7,22 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LinkTrackerTestSuite.Services
+namespace LinkTracker.TestSuite.Services.FileStorage
 {
-    public class InMemFileStorageTests
+    public abstract class FileStorageTests<T> where T : IFileStorage
     {
-        private InMemFileStorage fileStorage;
-        private InMemFileStorage GetBasicInMemFileStorage()
-        {
-            return new InMemFileStorage();
-        }
+        public abstract InMemFileStorage GetBasicFileStorage();
         
         [Fact]
         public async Task GetFile_NoFiles_ReturnsNullWhenFetchingEmpty()
         {
             //Arrange
             const string FILEPATH = "testName.ext";
-            var fileStorage = GetBasicInMemFileStorage();
+            var fileStorage = GetBasicFileStorage();
 
             //Assert
             Assert.Null(await fileStorage.GetFile(FILEPATH));
@@ -34,7 +30,7 @@ namespace LinkTrackerTestSuite.Services
             //Arrange
             const string FILEPATH = "testName.ext";
             const string CONTENT_TYPE = "application/any";
-            var fileStorage = GetBasicInMemFileStorage();
+            var fileStorage = GetBasicFileStorage();
             var streamMock = new Mock<Stream>();
             var file = new StoredFile(FILEPATH, streamMock.Object, CONTENT_TYPE);
 
@@ -52,7 +48,7 @@ namespace LinkTrackerTestSuite.Services
             const string FILEPATH = "testName.ext";
             const string FILEPATH2 = "testName2.ext";
             const string CONTENT_TYPE = "application/any";
-            var fileStorage = GetBasicInMemFileStorage();
+            var fileStorage = GetBasicFileStorage();
             var streamMock = new Mock<Stream>();
             var file = new StoredFile(FILEPATH, streamMock.Object, CONTENT_TYPE);
 
@@ -70,7 +66,7 @@ namespace LinkTrackerTestSuite.Services
             const string FILEPATH = "testName.ext";
             const string FILEPATH2 = "testName2.ext";
             const string CONTENT_TYPE = "application/any";
-            var fileStorage = GetBasicInMemFileStorage();
+            var fileStorage = GetBasicFileStorage();
             var streamMock = new Mock<Stream>();
             var file = new StoredFile(FILEPATH, streamMock.Object, CONTENT_TYPE);
             var file2 = new StoredFile(FILEPATH2, streamMock.Object, CONTENT_TYPE);
@@ -90,7 +86,7 @@ namespace LinkTrackerTestSuite.Services
             //Arrange
             const string FILEPATH = "testName.ext";
             const string CONTENT_TYPE = "application/any";
-            var fileStorage = GetBasicInMemFileStorage();
+            var fileStorage = GetBasicFileStorage();
             var streamMock = new Mock<Stream>();
             var file = new StoredFile(FILEPATH, streamMock.Object, CONTENT_TYPE);
 
@@ -99,6 +95,14 @@ namespace LinkTrackerTestSuite.Services
 
             //Assert
             Assert.False(await fileStorage.UploadFile(file));
+        }
+    }
+
+    public class InMemoryFileStorageTests : FileStorageTests<InMemFileStorage>
+    {
+        public override InMemFileStorage GetBasicFileStorage()
+        {
+            return new InMemFileStorage();
         }
     }
 }
