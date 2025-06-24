@@ -7,21 +7,29 @@ namespace LinkTracker.API.Controllers
     [ApiController]
     public class AnalyticsController : Controller
     {
+        /// <summary>
+        /// Get all distinct visits for all files
+        /// </summary>
+        /// <returns>Returns all logged visits for all files</returns>
         [HttpGet("/analytics")]
-        public async Task<ActionResult> GetGeneralAnalytics(IAnalyticsTracker analyticsTracker)
+        public async Task<ActionResult> GetAnalytics(IAnalyticsTracker analyticsTracker)
         {
             StringBuilder resultBuilder = new();
 
             var results = await analyticsTracker.GetVisits();
 
-            if (!results.Any()) return NotFound();
+            if (!results.Any()) return NoContent();
 
-            string output = new(results.GroupBy(v => v.Filename).SelectMany(g => $"{g.Key} {g.Count()}\n").ToArray());
-            return Ok(output);
+            return Ok(results);
         }
 
+        /// <summary>
+        /// Get all distinct visits for a given file
+        /// </summary>
+        /// <param name="filename">Filename to get analytics for</param>
+        /// <returns>Returns all logged visits for the file matching the provided filename</returns>
         [HttpGet("/analytics/{filename}")]
-        public async Task<ActionResult> GetGeneralAnalytics(string filename, IAnalyticsTracker analyticsTracker)
+        public async Task<ActionResult> GetSingleAnalytics(string filename, IAnalyticsTracker analyticsTracker)
         {
             StringBuilder resultBuilder = new();
 
@@ -29,8 +37,7 @@ namespace LinkTracker.API.Controllers
 
             if (!results.Any()) return NotFound();
 
-            string output = $"{filename} {results.Count()}";
-            return Ok(output);
+            return Ok(results);
         }
     }
 }
