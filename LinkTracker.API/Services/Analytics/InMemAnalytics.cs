@@ -20,7 +20,7 @@
                 return matching.Where(v => !analytics.OnlyShowReferrals || (analytics.OnlyShowReferrals && v.ReferralId is not null));
             }
 
-            return visits.Values.SelectMany(s => s);
+            return visits.Values.SelectMany(s => s).OrderBy(v => v.UtcTime);
         }
 
         public async Task RecordVisit(string filename, string? referralId = null)
