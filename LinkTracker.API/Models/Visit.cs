@@ -1,4 +1,4 @@
-﻿namespace LinkTracker.API.Services.Analytics
+﻿namespace LinkTracker.API.Models
 {
     public class Visit
     {
