@@ -10,12 +10,12 @@ namespace LinkTracker.API.Controllers
     public class RedirectController : Controller
     {
         [HttpGet("/{filename}")]
-        public async Task<ActionResult> Get(string filename, IFileStorage fileStorage, IAnalyticsTracker analyticsTracker)
+        public async Task<ActionResult> Get(string filename, IFileStorage fileStorage, IAnalyticsTracker analyticsTracker, [FromQuery] string? referral = null)
         {
             StoredFile? file = await fileStorage.GetFile(filename);
             if (file is not null)
             {
-                await analyticsTracker.RecordVisit(filename);
+                await analyticsTracker.RecordVisit(filename, referral);
                 return File(file.Data, file.ContentType, file.GetPath());
             }
             else return NotFound();

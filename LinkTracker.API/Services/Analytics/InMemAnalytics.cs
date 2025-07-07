@@ -1,4 +1,5 @@
 ﻿using LinkTracker.API.Models;
+using System.Reflection.PortableExecutable;
 
 namespace LinkTracker.API.Services.Analytics
 {
@@ -15,14 +16,18 @@ namespace LinkTracker.API.Services.Analytics
         {
             AnalyticsOptions analytics = new();
             options.Invoke(analytics);
+            IEnumerable<Visit> fetchedVisits;
 
             if (analytics.FileName is not null)
             {
-                IEnumerable<Visit> matching = visits.GetValueOrDefault(analytics.FileName, []);
-                return analytics.ApplyOptions(matching).OrderBy(v => v.UtcTime);
+                fetchedVisits = visits.GetValueOrDefault(analytics.FileName, []);
+            }
+            else
+            {
+                fetchedVisits = visits.Values.SelectMany(s => s);
             }
 
-            return visits.Values.SelectMany(s => s).OrderBy(v => v.UtcTime);
+            return analytics.ApplyOptions(fetchedVisits).OrderBy(v => v.UtcTime);
         }
 
         public async Task RecordVisit(string filename, string? referralId = null)

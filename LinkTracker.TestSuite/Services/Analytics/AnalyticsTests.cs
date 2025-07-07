@@ -99,7 +99,100 @@ namespace LinkTracker.TestSuite.Services.Analytics
             Assert.True(visits.Count(v => v.Filename == FILENAME2) == 1);
         }
 
-        //TODO: Add tests for referrals
+        [Fact]
+        public async Task GetVisits_NoVisitsSpecifiedReferral_ShouldReturnEmpty()
+        {
+            var analytics = GetBasicAnalytics();
+            const string REFERRAL = "RefferralCode";
+
+            Assert.Empty(await analytics.GetVisits(o => o.Referral = REFERRAL));
+        }
+
+        [Fact]
+        public async Task RecordVisit_SingleVisitWithReferral_ReturnsSingleVisit()
+        {
+            var analytics = GetBasicAnalytics();
+            const string FILENAME = "exampleFile.txt";
+            const string REFERRAL = "RefferralCode";
+
+            await analytics.RecordVisit(FILENAME, REFERRAL);
+
+            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            Assert.True(visits.Count() == 1);
+            Assert.True(visits.First().ReferralId == REFERRAL);
+        }
+
+        [Fact]
+        public async Task RecordVisit_MultipleVisitSWithSingleReferral_ReturnsSingleVisit()
+        {
+            var analytics = GetBasicAnalytics();
+            const string FILENAME = "exampleFile.txt";
+            const string REFERRAL = "RefferralCode";
+
+            await analytics.RecordVisit(FILENAME, REFERRAL);
+            await analytics.RecordVisit(FILENAME);
+
+            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            Assert.True(visits.Count() == 1);
+            Assert.True(visits.First().ReferralId == REFERRAL);
+        }
+
+        [Fact]
+        public async Task RecordVisit_MultipleDifferentVisitsAllWithReferrals_ReturnsAllVisits()
+        {
+            var analytics = GetBasicAnalytics();
+            const string FILENAME = "exampleFile.txt";
+            const string FILENAME2 = "exampleFile2.txt";
+            const string REFERRAL = "RefferralCode";
+
+            await analytics.RecordVisit(FILENAME, REFERRAL);
+            await analytics.RecordVisit(FILENAME2, REFERRAL);
+
+            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            Assert.True(visits.Count() == 2);
+            Assert.True(visits.Count(v => v.Filename == FILENAME) == 1);
+            Assert.True(visits.Count(v => v.Filename == FILENAME2) == 1);
+            Assert.True(visits.All(v => v.ReferralId == REFERRAL));
+        }
+
+        [Fact]
+        public async Task RecordVisit_MultipleDifferentVisitsSomeWithReferrals_ReturnsAllReferredVisits()
+        {
+            var analytics = GetBasicAnalytics();
+            const string FILENAME = "exampleFile.txt";
+            const string FILENAME2 = "exampleFile2.txt";
+            const string REFERRAL = "RefferralCode";
+
+            await analytics.RecordVisit(FILENAME, REFERRAL);
+            await analytics.RecordVisit(FILENAME);
+            await analytics.RecordVisit(FILENAME2, REFERRAL);
+            await analytics.RecordVisit(FILENAME2);
+
+            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            Assert.True(visits.Count() == 2);
+            Assert.True(visits.Count(v => v.Filename == FILENAME) == 1);
+            Assert.True(visits.Count(v => v.Filename == FILENAME2) == 1);
+            Assert.True(visits.All(v => v.ReferralId == REFERRAL));
+        }
+
+        [Fact]
+        public async Task RecordVisit_MultipleDifferentVisitsSomeWithReferralsRequestSingleFilename_ReturnsAllSingleVisit()
+        {
+            var analytics = GetBasicAnalytics();
+            const string FILENAME = "exampleFile.txt";
+            const string FILENAME2 = "exampleFile2.txt";
+            const string REFERRAL = "RefferralCode";
+
+            await analytics.RecordVisit(FILENAME, REFERRAL);
+            await analytics.RecordVisit(FILENAME);
+            await analytics.RecordVisit(FILENAME2, REFERRAL);
+            await analytics.RecordVisit(FILENAME2);
+
+            var visits = await analytics.GetVisits(o => { o.Referral = REFERRAL; o.FileName = FILENAME; });
+            Assert.True(visits.Count() == 1);
+            Assert.True(visits.First().ReferralId == REFERRAL);
+            Assert.True(visits.First().Filename == FILENAME);
+        }
     }
 
     public class InMemAnalyticsTrackerTests : AnalyticsTrackerTests<InMemAnalytics>

@@ -1,4 +1,6 @@
-﻿namespace LinkTracker.API.Services.Analytics
+﻿using LinkTracker.API.Models;
+
+namespace LinkTracker.API.Services.Analytics
 {
     public interface IAnalyticsTracker
     {

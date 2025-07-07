@@ -7,20 +7,26 @@ namespace LinkTracker.API.Controllers
     [ApiController]
     public class AnalyticsController : Controller
     {
-        /// <summary>
-        /// Get all distinct visits for all files
-        /// </summary>
-        /// <returns>Returns all logged visits for all files</returns>
-        [HttpGet("/analytics")]
-        public async Task<ActionResult> GetAnalytics(IAnalyticsTracker analyticsTracker)
+        private async Task<ActionResult> GetAnalyticsWithOptions(IAnalyticsTracker analyticsTracker, Action<AnalyticsOptions> options)
         {
             StringBuilder resultBuilder = new();
 
-            var results = await analyticsTracker.GetVisits();
+            var results = await analyticsTracker.GetVisits(options);
 
             if (!results.Any()) return NoContent();
 
             return Ok(results);
+        }
+
+        /// <summary>
+        /// Get all distinct visits for all files
+        /// </summary>
+        /// <param name="referral">Optional referral</param>
+        /// <returns>Returns all logged visits for all files</returns>
+        [HttpGet("/analytics")]
+        public async Task<ActionResult> GetAnalytics(IAnalyticsTracker analyticsTracker, [FromQuery] string? referral = null)
+        {
+            return await GetAnalyticsWithOptions(analyticsTracker, o => o.Referral = referral);
         }
 
         /// <summary>
@@ -29,15 +35,13 @@ namespace LinkTracker.API.Controllers
         /// <param name="filename">Filename to get analytics for</param>
         /// <returns>Returns all logged visits for the file matching the provided filename</returns>
         [HttpGet("/analytics/{filename}")]
-        public async Task<ActionResult> GetSingleAnalytics(string filename, IAnalyticsTracker analyticsTracker)
+        public async Task<ActionResult> GetSingleAnalytics(string filename, IAnalyticsTracker analyticsTracker, [FromQuery] string? referral = null)
         {
-            StringBuilder resultBuilder = new();
-
-            var results = await analyticsTracker.GetVisits(o => o.FileName = filename);
-
-            if (!results.Any()) return NotFound();
-
-            return Ok(results);
+            return await GetAnalyticsWithOptions(analyticsTracker, o => 
+            { 
+                o.FileName = filename;
+                o.Referral = referral;
+            });
         }
     }
 }
