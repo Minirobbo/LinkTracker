@@ -1,4 +1,6 @@
-﻿namespace LinkTracker.API.Services.Analytics
+﻿using LinkTracker.API.Models;
+
+namespace LinkTracker.API.Services.Analytics
 {
     public class InMemAnalytics : IAnalyticsTracker
     {
@@ -17,7 +19,7 @@
             if (analytics.FileName is not null)
             {
                 IEnumerable<Visit> matching = visits.GetValueOrDefault(analytics.FileName, []);
-                return matching.Where(v => !analytics.OnlyShowReferrals || (analytics.OnlyShowReferrals && v.ReferralId is not null));
+                return analytics.ApplyOptions(matching).OrderBy(v => v.UtcTime);
             }
 
             return visits.Values.SelectMany(s => s).OrderBy(v => v.UtcTime);

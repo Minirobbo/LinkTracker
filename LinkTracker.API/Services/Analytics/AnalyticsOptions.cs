@@ -1,4 +1,6 @@
-﻿namespace LinkTracker.API.Services.Analytics
+﻿using LinkTracker.API.Models;
+
+namespace LinkTracker.API.Services.Analytics
 {
     public class AnalyticsOptions
     {
@@ -9,6 +11,13 @@
         {
             OnlyShowReferrals = false;
             FileName = null;
+        }
+
+        public IEnumerable<Visit> ApplyOptions(IEnumerable<Visit> visits)
+        {
+            if (OnlyShowReferrals) visits = visits.Where(v => v.ReferralId is not null);
+            if (string.IsNullOrEmpty(FileName)) visits = visits.Where(v => v.Filename.StartsWith(FileName!));
+            return visits;
         }
     }
 }
