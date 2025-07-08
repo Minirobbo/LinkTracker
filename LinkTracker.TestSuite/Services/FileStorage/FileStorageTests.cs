@@ -11,7 +11,7 @@ namespace LinkTracker.TestSuite.Services.FileStorage
 {
     public abstract class FileStorageTests<T> where T : IFileStorage
     {
-        public abstract InMemFileStorage GetBasicFileStorage();
+        public abstract T GetBasicFileStorage();
         
         [Fact]
         public async Task GetFile_NoFiles_ReturnsNullWhenFetchingEmpty()
@@ -39,6 +39,23 @@ namespace LinkTracker.TestSuite.Services.FileStorage
 
             //Assert
             Assert.Equal(await fileStorage.GetFile(FILEPATH), file);
+        }
+
+        [Fact]
+        public async Task UploadGetFile_DuplicateFiles_FailsSecondUpload()
+        {
+            //Arrange
+            const string FILEPATH = "testName.ext";
+            const string CONTENT_TYPE = "application/any";
+            var fileStorage = GetBasicFileStorage();
+            var streamMock = new Mock<Stream>();
+            var file = new StoredFile(FILEPATH, streamMock.Object, CONTENT_TYPE);
+
+            //Act
+            if (!await fileStorage.UploadFile(file)) Assert.Fail("Unable to upload file");
+
+            //Assert
+            Assert.False(await fileStorage.UploadFile(file));
         }
 
         [Fact]

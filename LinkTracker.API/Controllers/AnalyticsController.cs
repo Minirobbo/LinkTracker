@@ -21,7 +21,7 @@ namespace LinkTracker.API.Controllers
         /// <summary>
         /// Get all distinct visits for all files
         /// </summary>
-        /// <param name="referral">Optional referral</param>
+        /// <param name="referral">Optional referral string to reference</param>
         /// <returns>Returns all logged visits for all files</returns>
         [HttpGet("/analytics")]
         public async Task<ActionResult> GetAnalytics(IAnalyticsTracker analyticsTracker, [FromQuery] string? referral = null)
@@ -33,6 +33,7 @@ namespace LinkTracker.API.Controllers
         /// Get all distinct visits for a given file
         /// </summary>
         /// <param name="filename">Filename to get analytics for</param>
+        /// <param name="referral">Optional referral string to reference</param>
         /// <returns>Returns all logged visits for the file matching the provided filename</returns>
         [HttpGet("/analytics/{filename}")]
         public async Task<ActionResult> GetSingleAnalytics(string filename, IAnalyticsTracker analyticsTracker, [FromQuery] string? referral = null)
