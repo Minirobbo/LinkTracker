@@ -32,7 +32,7 @@ namespace LinkTracker.API.Services.Analytics
 
         public async Task RecordVisit(string filename, string? referralId = null)
         {
-            Visit visit = new(filename, referralId);
+            Visit visit = new(filename, DateTime.UtcNow, referralId);
             if (!visits.TryAdd(filename, [visit]))
             {
                 visits[filename].Add(visit);
