@@ -1,7 +1,7 @@
-﻿using LinkTracker.API.Models;
-using LinkTracker.API.Services.Analytics;
+﻿using LinkTracker.API.Services.Analytics;
 using LinkTracker.API.Services.FileStorage;
 using LinkTracker.API.Services.RedirectionManager;
+using LinkTracker.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 

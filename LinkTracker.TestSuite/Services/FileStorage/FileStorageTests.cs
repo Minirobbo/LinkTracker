@@ -1,11 +1,6 @@
-﻿using LinkTracker.API.Models;
-using LinkTracker.API.Services.FileStorage;
+﻿using LinkTracker.API.Services.FileStorage;
+using LinkTracker.Shared.Models;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LinkTracker.TestSuite.Services.FileStorage
 {

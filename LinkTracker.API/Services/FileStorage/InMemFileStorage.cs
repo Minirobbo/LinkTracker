@@ -1,4 +1,4 @@
-﻿using LinkTracker.API.Models;
+﻿using LinkTracker.Shared.Models;
 
 namespace LinkTracker.API.Services.FileStorage
 {

@@ -1,4 +1,4 @@
-﻿namespace LinkTracker.API.Models
+﻿namespace LinkTracker.Shared.Models
 {
     public class StoredFile
     {

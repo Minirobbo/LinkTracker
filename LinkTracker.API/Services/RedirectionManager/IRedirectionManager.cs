@@ -1,6 +1,4 @@
-﻿using LinkTracker.API.Models;
-
-namespace LinkTracker.API.Services.RedirectionManager
+﻿namespace LinkTracker.API.Services.RedirectionManager
 {
     public interface IRedirectionManager
     {

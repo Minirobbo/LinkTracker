@@ -1,5 +1,5 @@
-﻿using LinkTracker.API.Models;
-using System.Reflection.PortableExecutable;
+﻿
+using LinkTracker.Shared.Models;
 
 namespace LinkTracker.API.Services.Analytics
 {

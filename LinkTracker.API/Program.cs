@@ -1,11 +1,14 @@
 using LinkTracker.API.Services.Analytics;
 using LinkTracker.API.Services.FileStorage;
 using LinkTracker.API.Services.RedirectionManager;
+using LinkTracker.Shared.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Configuration.ConfigureApiSettingsFromSettingsFile();
+builder.UseUrlsFromProjectSettings();
 // Add services to the container.
 
 builder.Services.AddControllers();
