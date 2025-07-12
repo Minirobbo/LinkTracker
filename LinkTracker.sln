@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkTracker.API", "LinkTrac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkTracker.TestSuite", "LinkTracker.TestSuite\LinkTracker.TestSuite.csproj", "{611F7FCC-E406-79EB-BAD0-E92248AE213E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkTracker.DashboardWASM", "LinkTracker.DashboardWASM\LinkTracker.DashboardWASM.csproj", "{C86338C0-259D-43F9-AC16-F34288833EC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{611F7FCC-E406-79EB-BAD0-E92248AE213E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{611F7FCC-E406-79EB-BAD0-E92248AE213E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{611F7FCC-E406-79EB-BAD0-E92248AE213E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C86338C0-259D-43F9-AC16-F34288833EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C86338C0-259D-43F9-AC16-F34288833EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C86338C0-259D-43F9-AC16-F34288833EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C86338C0-259D-43F9-AC16-F34288833EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LinkTracker.DashboardWASM</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/app.css" />
+    <!-- If you add any scoped CSS files, uncomment the following to load them
+    <link href="LinkTracker.DashboardWASM.styles.css" rel="stylesheet" /> -->
+</head>
+
+<body>
+    <div id="app" class="hidden">
+    </div>
+
+    <div id="login_and_loading" class="login_container">
+        <div id="loginForm" class="login_outline">
+            <h2>Login</h2>
+            <form class="login_form" onsubmit="validateUser()" action="javascript:void(0)">
+                <label for="username">Please enter your username:</label>
+                <input type="text" name="username" />
+                <label for="password">Please enter your password:</label>
+                <input type="password" name="password" />
+                <input type="submit" />
+            </form>
+        </div>
+        <div id="loading_group" class="hidden">
+            <svg id="loading" class="loading-progress">
+                <circle r="40%" cx="50%" cy="50%" />
+                <circle r="40%" cx="50%" cy="50%" />
+            </svg>
+            <div class="loading-progress-text">Loading...</div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+
+    <script>
+        function validateUser() {
+            document.getElementById("loading_group").classList = "";
+            document.getElementById("loading").classList += " loading";
+            document.getElementById("loginForm").classList += " hidden";
+            Blazor.start().then(() => {
+                document.getElementById("app").classList = "";
+                document.getElementById("login_and_loading").classList += " hidden";
+            });
+        }
+    </script>
+</body>
+
+</html>
