@@ -1,5 +1,28 @@
 ﻿@page "/"
+@using LinkTracker.DashboardWASM.Services
+@using LinkTracker.Shared.Models
 
 <PageTitle>Home</PageTitle>
 
-<MudChart ChartType="ChartType.Line" />
+<MudText>DASHBOARD</MudText>
+
+@* <MudChart ChartType="ChartType.Line" /> *@
+
+@foreach (Visit visit in visits)
+{
+    <p>@visit.Filename at @visit.UtcTime (Referral: @visit.ReferralId)</p>
+}
+
+@code {
+    [Inject]
+    IFetchAnalytics analytics { get; set; }
+
+    private IEnumerable<Visit> visits = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        visits = await analytics.GetVisitsAsync();
+        StateHasChanged();
+        await base.OnParametersSetAsync();
+    }
+}

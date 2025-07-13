@@ -7,8 +7,8 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.ConfigureApiSettingsFromSettingsFile();
-builder.UseUrlsFromProjectSettings();
+var urlSettings = builder.Configuration.GetSection("ApiSettings").Get<UrlSettings>();
+builder.WebHost.UseUrls(urlSettings.BaseAPIURLs);
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -17,6 +17,16 @@ builder.Services.AddSingleton<IFileStorage, InMemFileStorage>();
 builder.Services.AddSingleton<IRedirectionManager, InMemRedirectionManager>();
 builder.Services.AddSingleton<IAnalyticsTracker, InMemAnalytics>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins(urlSettings.BaseWASMURLs)
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+    });
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -33,6 +43,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+app.UseCors("CorsPolicy");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

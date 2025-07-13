@@ -1,6 +1,0 @@
-{
-  "ApiSettings": {
-    "BaseHttpURL": "http://localhost:6000",
-    "BaseHttpsURL": "https://localhost:7000"
-  }
-}
