@@ -8,6 +8,13 @@
 
 @* <MudChart ChartType="ChartType.Line" /> *@
 
+<MudStack>
+    <MudTextField Placeholder="Referral" @bind-Value="referral" Clearable />
+    <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="startDate" Placeholder="Start Date" Clearable/>
+    <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="endDate" Placeholder="End Date" Clearable/>
+    <MudButton OnClick="@(async () => await ReloadAnalytics())">Reload</MudButton>
+</MudStack>
+
 @foreach (Visit visit in visits)
 {
     <p>@visit.Filename at @visit.UtcTime (Referral: @visit.ReferralId)</p>
@@ -18,11 +25,25 @@
     IFetchAnalytics analytics { get; set; }
 
     private IEnumerable<Visit> visits = [];
+    private string? referral = null;
+    private DateTime? startDate = null;
+    private DateTime? endDate = null;
 
     protected override async Task OnParametersSetAsync()
     {
-        visits = await analytics.GetVisitsAsync();
-        StateHasChanged();
+        await ReloadAnalytics();
         await base.OnParametersSetAsync();
+    }
+
+    private async Task ReloadAnalytics()
+    {
+        AnalyticsQuery query = new AnalyticsQuery();
+
+        if (startDate is not null) query = query.Where(AnalyticsFilter.StartDateTime(startDate.Value));
+        if (endDate is not null) query = query.Where(AnalyticsFilter.EndDateTime(endDate.Value));
+        if (!string.IsNullOrWhiteSpace(referral)) query = query.Where(AnalyticsFilter.Referral(referral));
+
+        visits = await analytics.GetVisitsAsync(query);
+        StateHasChanged();
     }
 }

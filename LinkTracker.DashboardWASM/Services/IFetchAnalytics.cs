@@ -4,6 +4,7 @@ namespace LinkTracker.DashboardWASM.Services
 {
     public interface IFetchAnalytics
     {
-        public Task<IEnumerable<Visit>> GetVisitsAsync(string? filename = null, string? referral = null);
+        public Task<IEnumerable<Visit>> GetVisitsAsync();
+        public Task<IEnumerable<Visit>> GetVisitsAsync(AnalyticsQuery query);
     }
 }

@@ -22,6 +22,6 @@ namespace LinkTracker.API.Services.Analytics
         /// </summary>
         /// <param name="options">Options to apply to limit analytics to be returned</param>
         /// <returns>Enumerable list of Visit objects in order of time of visit, filtered by the options parameter</returns>
-        public Task<IEnumerable<Visit>> GetVisits(Action<AnalyticsOptions> options);
+        public Task<IEnumerable<Visit>> GetVisits(AnalyticsQuery options);
     }
 }

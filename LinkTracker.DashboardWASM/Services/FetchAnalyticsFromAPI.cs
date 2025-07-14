@@ -14,9 +14,11 @@ namespace LinkTracker.DashboardWASM.Services
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<Visit>> GetVisitsAsync(string? filename = null, string? referral = null)
+        public async Task<IEnumerable<Visit>> GetVisitsAsync() => await GetVisitsAsync(new());
+
+        public async Task<IEnumerable<Visit>> GetVisitsAsync(AnalyticsQuery query)
         {
-            var response = await _httpClient.GetAsync("/analytics");
+            var response = await _httpClient.GetAsync($"/analytics{query.QueryClause}");
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var stream = await response.Content.ReadAsStreamAsync();

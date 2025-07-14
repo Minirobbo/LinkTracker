@@ -1,4 +1,5 @@
 ﻿using LinkTracker.API.Services.Analytics;
+using LinkTracker.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
             var analytics = GetBasicAnalytics();
             const string FILENAME = "exampleFile.txt";
 
-            Assert.Empty(await analytics.GetVisits(o => o.FileName = FILENAME));
+            Assert.Empty(await analytics.GetVisits(AnalyticsFilter.Filename(FILENAME)));
         }
 
         [Fact]
@@ -37,7 +38,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
 
             await analytics.RecordVisit(FILENAME);
 
-            Assert.Empty(await analytics.GetVisits(o => o.FileName = FILENAME2));
+            Assert.Empty(await analytics.GetVisits(AnalyticsFilter.Filename(FILENAME2)));
         }
 
         [Fact]
@@ -51,7 +52,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
             await analytics.RecordVisit(FILENAME);
             await analytics.RecordVisit(FILENAME2);
 
-            var visits = await analytics.GetVisits(o => o.FileName = FILENAME);
+            var visits = await analytics.GetVisits(AnalyticsFilter.Filename(FILENAME2));
             Assert.True(visits.Count() == 2);
             Assert.True(visits.All(v => v.Filename == FILENAME));
         }
@@ -105,7 +106,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
             var analytics = GetBasicAnalytics();
             const string REFERRAL = "RefferralCode";
 
-            Assert.Empty(await analytics.GetVisits(o => o.Referral = REFERRAL));
+            Assert.Empty(await analytics.GetVisits(AnalyticsFilter.Referral(REFERRAL)));
         }
 
         [Fact]
@@ -117,7 +118,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
 
             await analytics.RecordVisit(FILENAME, REFERRAL);
 
-            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            var visits = await analytics.GetVisits(AnalyticsFilter.Referral(REFERRAL));
             Assert.True(visits.Count() == 1);
             Assert.True(visits.First().ReferralId == REFERRAL);
         }
@@ -132,7 +133,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
             await analytics.RecordVisit(FILENAME, REFERRAL);
             await analytics.RecordVisit(FILENAME);
 
-            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            var visits = await analytics.GetVisits(AnalyticsFilter.Referral(REFERRAL));
             Assert.True(visits.Count() == 1);
             Assert.True(visits.First().ReferralId == REFERRAL);
         }
@@ -148,7 +149,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
             await analytics.RecordVisit(FILENAME, REFERRAL);
             await analytics.RecordVisit(FILENAME2, REFERRAL);
 
-            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            var visits = await analytics.GetVisits(AnalyticsFilter.Referral(REFERRAL));
             Assert.True(visits.Count() == 2);
             Assert.True(visits.Count(v => v.Filename == FILENAME) == 1);
             Assert.True(visits.Count(v => v.Filename == FILENAME2) == 1);
@@ -168,7 +169,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
             await analytics.RecordVisit(FILENAME2, REFERRAL);
             await analytics.RecordVisit(FILENAME2);
 
-            var visits = await analytics.GetVisits(o => o.Referral = REFERRAL);
+            var visits = await analytics.GetVisits(AnalyticsFilter.Referral(REFERRAL));
             Assert.True(visits.Count() == 2);
             Assert.True(visits.Count(v => v.Filename == FILENAME) == 1);
             Assert.True(visits.Count(v => v.Filename == FILENAME2) == 1);
@@ -188,7 +189,7 @@ namespace LinkTracker.TestSuite.Services.Analytics
             await analytics.RecordVisit(FILENAME2, REFERRAL);
             await analytics.RecordVisit(FILENAME2);
 
-            var visits = await analytics.GetVisits(o => { o.Referral = REFERRAL; o.FileName = FILENAME; });
+            var visits = await analytics.GetVisits(new AnalyticsQuery().Where(AnalyticsFilter.Filename(FILENAME)).Where(AnalyticsFilter.Referral(REFERRAL)));
             Assert.True(visits.Count() == 1);
             Assert.True(visits.First().ReferralId == REFERRAL);
             Assert.True(visits.First().Filename == FILENAME);

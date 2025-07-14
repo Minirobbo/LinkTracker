@@ -7,24 +7,16 @@ namespace LinkTracker.API.Services.Analytics
     {
         private Dictionary<string, List<Visit>> visits = [];
 
-        public async Task<IEnumerable<Visit>> GetVisits()
-        {
-            return await GetVisits(o => { });
-        }
+        public async Task<IEnumerable<Visit>> GetVisits() => await GetVisits(new());
 
-        public async Task<IEnumerable<Visit>> GetVisits(Action<AnalyticsOptions> options)
+        public async Task<IEnumerable<Visit>> GetVisits(AnalyticsQuery analytics)
         {
-            AnalyticsOptions analytics = new();
-            options.Invoke(analytics);
             IEnumerable<Visit> fetchedVisits;
+            fetchedVisits = visits.Values.SelectMany(s => s);
 
-            if (analytics.FileName is not null)
+            if (analytics.TryGetFirstValueForProperty("fileName", out string filename))
             {
-                fetchedVisits = visits.GetValueOrDefault(analytics.FileName, []);
-            }
-            else
-            {
-                fetchedVisits = visits.Values.SelectMany(s => s);
+                fetchedVisits = visits.GetValueOrDefault(filename, []);
             }
 
             return analytics.ApplyOptions(fetchedVisits).OrderBy(v => v.UtcTime);
