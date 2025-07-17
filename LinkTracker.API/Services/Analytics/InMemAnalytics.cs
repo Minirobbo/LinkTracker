@@ -6,6 +6,16 @@ namespace LinkTracker.API.Services.Analytics
     public class InMemAnalytics : IAnalyticsTracker
     {
         private Dictionary<string, List<Visit>> visits = [];
+        //Testing code:
+        //private Dictionary<string, List<Visit>> visits = new() {
+        //    {"abc", [new Visit("abc", new DateTime(2025, 7, 8)),
+        //             new Visit("abc", new DateTime(2025, 7, 9)),
+        //             new Visit("abc", new DateTime(2025, 7, 12)),
+        //             new Visit("abc", new DateTime(2025, 7, 12)),
+        //             new Visit("abc", new DateTime(2025, 7, 13)),
+        //             new Visit("abc", new DateTime(2025, 7, 14)),
+        //             new Visit("abc", new DateTime(2025, 7, 18))] }
+        //};
 
         public async Task<IEnumerable<Visit>> GetVisits() => await GetVisits(new());
 
