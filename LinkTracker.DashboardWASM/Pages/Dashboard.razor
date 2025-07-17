@@ -1,24 +1,36 @@
 ﻿@page "/"
 @using LinkTracker.DashboardWASM.Services
+@using LinkTracker.Shared.Extensions
 @using LinkTracker.Shared.Models
 
 <PageTitle>Home</PageTitle>
 
-<MudText>DASHBOARD</MudText>
+<div class="pa-4">
+    <MudText Typo="Typo.h1">DASHBOARD</MudText>
 
-@* <MudChart ChartType="ChartType.Line" /> *@
+    <MudPaper Class="ma-10" Width="50%">
+        <div>
+            <MudTimeSeriesChart Class="pa-4 chart" Height="100%" Width="100%" ChartType="ChartType.Line" ChartSeries="@Series" ChartOptions="_options" TimeLabelSpacing="@GetLabelSpacing()" TimeLabelSpacingRounding TimeLabelFormat="@GetFormatString(Timespan)" DataMarkerTooltipTimeLabelFormat="@GetFormatString(Timespan)" />
+        </div>
+    </MudPaper>
 
-<MudStack>
-    <MudTextField Placeholder="Referral" @bind-Value="referral" Clearable />
-    <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="startDate" Placeholder="Start Date" Clearable/>
-    <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="endDate" Placeholder="End Date" Clearable/>
-    <MudButton OnClick="@(async () => await ReloadAnalytics())">Reload</MudButton>
-</MudStack>
+    <MudStack>
+        <MudTextField Placeholder="Referral" @bind-Value="referral" Clearable />
+        <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="startDate" Placeholder="Start Date" Clearable/>
+        <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="endDate" Placeholder="End Date" Clearable/>
+        <MudSelect @bind-Value="Timespan" @bind-Value:after=ReloadAnalytics>
+            <MudSelectItem Value="TimeSpan.FromHours(1)">Hourly</MudSelectItem>
+            <MudSelectItem Value="TimeSpan.FromDays(1)">Daily</MudSelectItem>
+            <MudSelectItem Value="TimeSpan.FromDays(7)">Weekly</MudSelectItem>
+        </MudSelect>
+        <MudButton OnClick="@(async () => await ReloadAnalytics())">Reload</MudButton>
+    </MudStack>
 
-@foreach (Visit visit in visits)
-{
-    <p>@visit.Filename at @visit.UtcTime (Referral: @visit.ReferralId)</p>
-}
+    @foreach (Visit visit in visits)
+    {
+        <p>@visit.Filename at @visit.UtcTime (Referral: @visit.ReferralId)</p>
+    }
+</div>
 
 @code {
     [Inject]
@@ -28,6 +40,33 @@
     private string? referral = null;
     private DateTime? startDate = null;
     private DateTime? endDate = null;
+
+    string[] Labels = [];
+    TimeSeriesChartSeries DataSeries = new() { Data = [], Name = "Visits Daily Count" };
+    List<TimeSeriesChartSeries> Series => [DataSeries];
+    TimeSpan Timespan = TimeSpan.FromDays(1);
+
+    TimeSpan GetLabelSpacing() 
+    {
+        var dates = DataSeries.Data.Select(d => d.DateTime);
+        if (dates.Count() == 0) return new();
+        DateTime min = dates.Min();
+        DateTime max = dates.Max();
+        var spacing = (max - min) / 10;
+        return spacing > Timespan ? spacing : Timespan;
+    }
+
+    string GetFormatString(TimeSpan span) => span switch
+    {
+        { Days: var d, Hours: 0, Minutes: 0, Seconds: 0 } when d > 0 => "dd/MM/yyyy",
+        _ => "dd/MM/yyyy HH:mm:ss"
+    };
+    private readonly ChartOptions _options = new()
+        {
+            ShowLegend = false,
+            YAxisTicks = 1,
+            YAxisRequireZeroPoint = true
+        };
 
     protected override async Task OnParametersSetAsync()
     {
@@ -44,6 +83,54 @@
         if (!string.IsNullOrWhiteSpace(referral)) query = query.Where(AnalyticsFilter.Referral(referral));
 
         visits = await analytics.GetVisitsAsync(query);
+
+        GenerateData();
         StateHasChanged();
+    }
+
+    private void GenerateData()
+    {
+        Labels = [];
+        DataSeries.Data = [];
+        if (visits.Count() == 0) return;
+
+        DataSeries.Data = visits.Select(v => v.UtcTime.Date.Floor(Timespan))
+                          .GroupBy(v => v.Date)
+                          .OrderBy(v => v.Key)
+                          .Select(v => new DateTimeExtensions.TimeCount(v.Key, v.Count()))
+                          .FillMissingTimes(Timespan)
+                          .Select(g => new TimeSeriesChartSeries.TimeValue(g.Time, g.Count))
+                          .ToList();
+
+        // Dictionary<DateTime, double> dayCounts = visits.Select(v => v.UtcTime.Date).GroupBy(v => v.Date).Select(g => (g.Key, (double)g.Count())).ToDictionary();
+        // foreach (DateTime date in dayCounts.Keys.Min().DatesBetween(dayCounts.Keys.Max(), TimeSpan.FromDays(1)))
+        // {
+        //     dayCounts.TryAdd(date, 0);
+        // }
+
+        // var orderedPairs = dayCounts.OrderBy(p => p.Key);
+
+        // Labels = orderedPairs.Select(d => d.Key.ToShortDateString()).ToArray();
+        // DataSeries.Data = orderedPairs.Select(p => p.Value).ToArray();
+        // StateHasChanged();
+
+        // List<string> dateLabels = [];
+        // List<(int i, double c)> counts = [];
+        // IEnumerable<DateTime> dates = visits.OrderBy(v => v.UtcTime).Select(v => v.UtcTime.Date).Distinct();
+        // DateTime lastDate = dates.First();
+        // double count = 0;
+        // foreach (DateTime date in dates.Skip(1))
+        // {
+        //     count++;
+        //     dateLabels.Add(lastDate.ToShortDateString());
+        //     while (lastDate < date)
+        //     {
+        //         lastDate.AddDays(1);
+        //         dateLabels.Add(lastDate.ToShortDateString());
+        //         counts.Add((dateLabels.Count, count));
+        //         count = 0;
+        //     }
+        //     lastDate = date;
+        // }
     }
 }
