@@ -1,0 +1,77 @@
+﻿@using LinkTracker.DashboardWASM.Components.DashboardWidgets
+@using LinkTracker.DashboardWASM.Services
+@using LinkTracker.Shared.Extensions
+@using LinkTracker.Shared.Models
+@using static MudBlazor.TimeSeriesChartSeries
+@typeparam T
+
+<MudPaper Class="ma-10" Width="50%">
+    <div>
+        <MudTimeSeriesChart 
+            Class="pa-4 chart" 
+            Height="100%"
+            Width="100%" 
+            ChartType="ChartType.Line" 
+            ChartSeries="@Series"
+            ChartOptions="_options"
+            TimeLabelSpacing="@GetLabelSpacing()" 
+            TimeLabelSpacingRounding 
+            TimeLabelFormat="@GetFormatString(TimeSpan)" 
+            DataMarkerTooltipTimeLabelFormat="@GetFormatString(TimeSpan)" />
+    </div>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public IWidgetDataProvider<T, TimeValue> DataProvider { get; set; }
+
+    [Parameter]
+    public TimeSpan TimeSpan { get; set; }
+
+    TimeSeriesChartSeries DataSeries = new();
+    List<TimeSeriesChartSeries> Series => [DataSeries];
+
+    TimeSpan GetLabelSpacing()
+    {
+        var dates = DataSeries.Data.Select(d => d.DateTime);
+        if (dates.Count() == 0) return new();
+        DateTime min = dates.Min();
+        DateTime max = dates.Max();
+        var spacing = (max - min) / 10;
+        return spacing > TimeSpan ? spacing : TimeSpan;
+    }
+
+    string GetFormatString(TimeSpan span) => span switch
+    {
+        { Days: var d, Hours: 0, Minutes: 0, Seconds: 0 } when d > 0 => "dd/MM/yyyy",
+        _ => "dd/MM/yyyy HH:mm:ss"
+    };
+
+    private readonly ChartOptions _options = new()
+        {
+            ShowLegend = false,
+            YAxisTicks = 1,
+            YAxisRequireZeroPoint = true
+        };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        DataSeries = await GenerateData();
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task<TimeSeriesChartSeries> GenerateData()
+    {
+        TimeSeriesChartSeries dataSeries = new() { Name = Title };
+
+        IEnumerable<T> visits = await DataProvider.GetData();
+
+        if (visits.Count() == 0) return dataSeries;
+
+        dataSeries.Data = DataProvider.ConvertData(visits).ToList();
+        return dataSeries;
+    }
+}
