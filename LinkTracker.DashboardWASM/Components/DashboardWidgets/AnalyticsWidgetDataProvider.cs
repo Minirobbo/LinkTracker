@@ -13,10 +13,10 @@ using static MudBlazor.TimeSeriesChartSeries;
 
 namespace LinkTracker.DashboardWASM.Components.DashboardWidgets
 {
-    public class AnalyticsWidgetDataProvider(IFetchAnalytics analytics, AnalyticsQuery query, TimeSpan timespan) 
+    public class IntervalCountWidgetDataProvider(IFetchAnalytics analytics, AnalyticsQuery query, ref TimeSpan interval) 
         : IWidgetDataProvider<Visit, TimeValue>
     {
-        public TimeSpan Timespan { get; set; } = timespan;
+        public TimeSpan Interval = interval;
         public AnalyticsQuery Query { get; set; } = query;
 
         public async Task<IEnumerable<Visit>> GetData()
@@ -24,11 +24,11 @@ namespace LinkTracker.DashboardWASM.Components.DashboardWidgets
 
         public IEnumerable<TimeValue> ConvertData(IEnumerable<Visit> visits)
         {
-            return visits.Select(v => v.UtcTime.Date.Floor(Timespan))
+            return visits.Select(v => v.UtcTime.Date.Floor(Interval))
                           .GroupBy(v => v.Date)
                           .OrderBy(v => v.Key)
                           .Select(v => new DateTimeExtensions.TimeCount(v.Key, v.Count()))
-                          .FillMissingTimes(Timespan)
+                          .FillMissingTimes(Interval)
                           .Select(g => new TimeSeriesChartSeries.TimeValue(g.Time, g.Count));
         }
     }

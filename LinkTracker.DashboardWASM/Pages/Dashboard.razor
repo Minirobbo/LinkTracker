@@ -13,9 +13,9 @@
     <TimeWidget T="Visit" DataProvider="@dataProvider" TimeSpan="Timespan" Title="Visits Count"/>
 
     <MudStack>
-        <MudTextField Placeholder="Referral" @bind-Value="referral" Clearable />
-        <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="startDate" Placeholder="Start Date" Clearable/>
-        <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="endDate" Placeholder="End Date" Clearable/>
+        <MudTextField Placeholder="Referral" @bind-Value="referral" @bind-Value:after="ReloadAnalytics" Clearable />
+        <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="startDate" @bind-Date:after="ReloadAnalytics" Placeholder="Start Date" Clearable/>
+        <MudDatePicker PickerVariant="PickerVariant.Inline" @bind-Date="endDate" @bind-Date:after="ReloadAnalytics" Placeholder="End Date" Clearable />
         <MudSelect @bind-Value="Timespan" @bind-Value:after=ReloadAnalytics>
             <MudSelectItem Value="TimeSpan.FromHours(1)">Hourly</MudSelectItem>
             <MudSelectItem Value="TimeSpan.FromDays(1)">Daily</MudSelectItem>
@@ -41,17 +41,18 @@
     TimeSpan Timespan = TimeSpan.FromDays(1);
     AnalyticsQuery query = new AnalyticsQuery();
 
-    AnalyticsWidgetDataProvider dataProvider;
+    IntervalCountWidgetDataProvider dataProvider;
 
     protected override async Task OnParametersSetAsync()
     {
-        dataProvider = new AnalyticsWidgetDataProvider(analytics, query, Timespan);
+        dataProvider = new IntervalCountWidgetDataProvider(analytics, query, ref Timespan);
         await ReloadAnalytics();
         await base.OnParametersSetAsync();
     }
 
     private async Task ReloadAnalytics()
     {
+        dataProvider.Interval = Timespan;
         dataProvider.Query = new();
 
         if (startDate is not null) dataProvider.Query = dataProvider.Query.Where(AnalyticsFilter.StartDateTime(startDate.Value));
