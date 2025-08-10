@@ -1,0 +1,55 @@
+﻿@using LinkTracker.DashboardWASM.Components.DashboardWidgets
+@using LinkTracker.DashboardWASM.Services
+@using LinkTracker.Shared.Extensions
+@using LinkTracker.Shared.Models
+@using static MudBlazor.TimeSeriesChartSeries
+@typeparam T
+
+<MudPaper Class="ma-10" Width="50%">
+    <div>
+        <MudChart 
+            Class="pa-4 chart" 
+            Height="60%"
+            Width="60%" 
+            ChartType="ChartType.Pie"
+            InputData="@Data.Select(d => d.Count).ToArray()"
+            InputLabels="@Data.Select(d => d.Label).ToArray()"
+            ChartOptions="_options"/>
+    </div>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public IWidgetDataProvider<T, ReferralCount> DataProvider { get; set; }
+
+    [Parameter]
+    public TimeSpan TimeSpan { get; set; }
+
+    IEnumerable<ReferralCount> Data = [];
+
+    private readonly ChartOptions _options = new()
+        {
+            ShowLegend = false,
+            YAxisTicks = 1,
+            YAxisRequireZeroPoint = true
+        };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Data = await GenerateData();
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task<IEnumerable<ReferralCount>> GenerateData()
+    {
+        IEnumerable<T> visits = await DataProvider.GetData();
+
+        if (visits.Count() == 0) return [];
+
+        Data = DataProvider.ConvertData(visits);
+        return Data;
+    }
+}

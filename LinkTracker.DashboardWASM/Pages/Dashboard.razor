@@ -10,7 +10,10 @@
 <div class="pa-4">
     <MudText Typo="Typo.h1">DASHBOARD</MudText>
 
-    <TimeWidget T="Visit" DataProvider="@dataProvider" TimeSpan="Timespan" Title="Visits Count"/>
+    <MudStack Row>
+        <TimeWidget T="Visit" DataProvider="@dataProvider" TimeSpan="Timespan" Title="Visits Count"/>
+        <ReferralWidget T="Visit" DataProvider="@aggregateDataProvider" Title="Visits Count"/>
+    </MudStack>
 
     <MudStack>
         <MudTextField Placeholder="Referral" @bind-Value="referral" @bind-Value:after="ReloadAnalytics" Clearable />
@@ -42,10 +45,12 @@
     AnalyticsQuery query = new AnalyticsQuery();
 
     IntervalCountWidgetDataProvider dataProvider;
+    ReferralAggregateWidgetDataProvider aggregateDataProvider;
 
     protected override async Task OnParametersSetAsync()
     {
         dataProvider = new IntervalCountWidgetDataProvider(analytics, query, ref Timespan);
+        aggregateDataProvider = new ReferralAggregateWidgetDataProvider(analytics, query);
         await ReloadAnalytics();
         await base.OnParametersSetAsync();
     }
@@ -53,12 +58,14 @@
     private async Task ReloadAnalytics()
     {
         dataProvider.Interval = Timespan;
-        dataProvider.Query = new();
+        query = new();
 
-        if (startDate is not null) dataProvider.Query = dataProvider.Query.Where(AnalyticsFilter.StartDateTime(startDate.Value));
-        if (endDate is not null) dataProvider.Query = dataProvider.Query.Where(AnalyticsFilter.EndDateTime(endDate.Value));
-        if (!string.IsNullOrWhiteSpace(referral)) dataProvider.Query = dataProvider.Query.Where(AnalyticsFilter.Referral(referral));
+        if (startDate is not null) query = query.Where(AnalyticsFilter.StartDateTime(startDate.Value));
+        if (endDate is not null) query = query.Where(AnalyticsFilter.EndDateTime(endDate.Value));
+        if (!string.IsNullOrWhiteSpace(referral)) query = query.Where(AnalyticsFilter.Referral(referral));
 
+        dataProvider.Query = query;
+        aggregateDataProvider.Query = query;
         StateHasChanged();
     }
 }
